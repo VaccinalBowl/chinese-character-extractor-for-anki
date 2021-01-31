@@ -1,0 +1,14 @@
+#!/bin/zsh
+file="$1"
+
+current_time=$(date "+%Y.%m.%d-%H.%M.%S")
+if [ "$file" = "anki.csv" ]; then
+    java -jar ~/eclipse-workspace/pinyin/target/pinyin-0.0.1-SNAPSHOT.jar -f anki.csv -t csv | sort | uniq  > anki_$current_time.csv
+elif [ "$file" = "anki.xml" ]; then
+     java -jar ~/eclipse-workspace/pinyin/target/pinyin-0.0.1-SNAPSHOT.jar -f anki.xml -t xml | sort | uniq  > anki_$current_time.csv
+else 
+    echo "Filename must be anki.xml or anki.csv"
+fi
+echo "Wrote CSV file to anki_$current_time.csv"
+
+
