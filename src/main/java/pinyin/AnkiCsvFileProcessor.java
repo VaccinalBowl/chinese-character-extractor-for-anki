@@ -1,22 +1,89 @@
 package pinyin;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.DocumentBuilder;
-
-import org.apache.commons.cli.*;
 import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Node;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 
-public class Extractor {
+public class AnkiCsvFileProcessor {
 
+
+    public static List<String> pinyinInitialsFinalsList;
+    private final List<CsvFileEntry> fileEntries;
+
+
+
+    private void readInputFile(){
+        Path path = Paths.get("testinput.csv");
+        try {
+            Files.readAllLines(path).forEach(line -> {
+                String[] entries = line.split("\t");
+                CsvFileEntry csvFileEntry = new CsvFileEntry.Builder()
+                        .simplifiedChinese(entries[0])
+                        .definition(entries[1])
+                        .rawPinyin(entries[2])
+                        .build();
+                fileEntries.add(csvFileEntry);
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public AnkiCsvFileProcessor(String pathToFile) throws IOException {
+        Path filePath = Paths.get(pathToFile);
+        this.fileEntries = new ArrayList<>();
+        Files.readAllLines(filePath).forEach(line -> {
+            String[] entries = line.split("\t");
+            CsvFileEntry csvFileEntry = new CsvFileEntry.Builder().simplifiedChinese(entries[0]).definition(entries[1]).rawPinyin(entries[2]).build();
+            fileEntries.add(csvFileEntry);
+        });
+    }
+
+    public void toCsvWithCharactersFile(){
+        Set<CsvFileEntry> setOfEntries = new HashSet<>();
+        fileEntries.forEach(csvFileEntry -> {
+            if(!setOfEntries.contains(csvFileEntry)){
+                System.out.println(csvFileEntry.toString());
+                System.out.println(csvFileEntry.toCsvLine());
+                setOfEntries.add(csvFileEntry);
+                csvFileEntry.getSingleCharacterEntries().forEach(singleCharacterEntry -> {
+                    System.out.println(singleCharacterEntry.toCsvLine());
+                    setOfEntries.add(csvFileEntry);
+                });
+            }
+        });
+    }
+
+
+
+
+    public static void main(String[] args){
+
+        try {
+            pinyinInitialsFinalsList = Files.readAllLines(Paths.get("pinyin_list.txt"));
+            String pathToFile="testinput.csv";
+            AnkiCsvFileProcessor ankiCsvFileProcessor = new AnkiCsvFileProcessor(pathToFile);
+            ankiCsvFileProcessor.toCsvWithCharactersFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    /*
     public static void main(String[] args) throws Exception {
 
         Options options = new Options();
@@ -53,8 +120,8 @@ public class Extractor {
 
 
 
-    }
-
+    }*/
+    /*
     private static void extractFromCsv(String inputFilePath) {
         try {
 
@@ -71,8 +138,9 @@ public class Extractor {
             e.printStackTrace();
         }
 
-    }
+    }*/
 
+    /*
     public static void extractFromXml(String fileName) {
 
 
@@ -98,6 +166,7 @@ public class Extractor {
             e.printStackTrace();
         }
     }
+    */
 
 
 
