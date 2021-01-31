@@ -50,7 +50,7 @@ public class CsvFileEntry {
         this.isSingleCharacter = this.simplifiedCharacter.length()==1;
         this.numberOfCharters = this.simplifiedCharacter.length();
         this.pinyinWithoutSpaces = pinyinSanitised.replaceAll(" ","");
-        this.pinyinWithoutTones = Normalizer.normalize(pinyinSanitised,Normalizer.Form.NFD)
+        this.pinyinWithoutTones = Normalizer.normalize(pinyinWithoutSpaces,Normalizer.Form.NFD)
                                                     .replaceAll("\\p{M}", "");
         this.singleCharacterEntries = this.decomposeCharacterEntriesIntoList();
 

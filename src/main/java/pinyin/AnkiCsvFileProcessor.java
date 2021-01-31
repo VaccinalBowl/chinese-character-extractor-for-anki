@@ -1,5 +1,6 @@
 package pinyin;
 
+import org.apache.commons.cli.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -55,13 +56,13 @@ public class AnkiCsvFileProcessor {
         Set<CsvFileEntry> setOfEntries = new HashSet<>();
         fileEntries.forEach(csvFileEntry -> {
             if(!setOfEntries.contains(csvFileEntry)){
-                System.out.println(csvFileEntry.toString());
-                System.out.println(csvFileEntry.toCsvLine());
-                setOfEntries.add(csvFileEntry);
                 csvFileEntry.getSingleCharacterEntries().forEach(singleCharacterEntry -> {
                     System.out.println(singleCharacterEntry.toCsvLine());
                     setOfEntries.add(csvFileEntry);
                 });
+                System.out.println(csvFileEntry.toCsvLine());
+                setOfEntries.add(csvFileEntry);
+
             }
         });
     }
@@ -71,33 +72,15 @@ public class AnkiCsvFileProcessor {
 
     public static void main(String[] args){
 
-        try {
-            pinyinInitialsFinalsList = Files.readAllLines(Paths.get("pinyin_list.txt"));
-            String pathToFile="testinput.csv";
-            AnkiCsvFileProcessor ankiCsvFileProcessor = new AnkiCsvFileProcessor(pathToFile);
-            ankiCsvFileProcessor.toCsvWithCharactersFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
-    }
-
-    /*
-    public static void main(String[] args) throws Exception {
-
         Options options = new Options();
         Option input = new Option("f", "file", true, "input file path");
         input.setRequired(true);
         options.addOption(input);
 
-        Option output = new Option("t", "type", true, "csv or xml");
-        output.setRequired(true);
-        options.addOption(output);
-
         CommandLineParser parser = new DefaultParser();
         HelpFormatter formatter = new HelpFormatter();
         CommandLine cmd=null;
+
         try {
             cmd = parser.parse(options, args);
         } catch (ParseException e) {
@@ -107,66 +90,18 @@ public class AnkiCsvFileProcessor {
         }
 
         String inputFilePath = cmd.getOptionValue("file");
-        String fileType = cmd.getOptionValue("type");
-
-        if(fileType.equals("xml")){
-            extractFromXml(inputFilePath);
-        }else if (fileType.equals("csv")){
-            extractFromCsv(inputFilePath);
-        }else{
-            System.out.println("Unsupported file type");
-            System.exit(1);
-        }
-
-
-
-    }*/
-    /*
-    private static void extractFromCsv(String inputFilePath) {
         try {
+          
 
-            File f = new File(inputFilePath);
-            BufferedReader b = new BufferedReader(new FileReader(f));
-            String readLine = "";
-            while ((readLine = b.readLine()) != null) {
-                String[] parts = readLine.split(",");
-                Entry entry = new Entry(parts[0],parts[2],parts[1]);
-                entry.toStdOut();
-            }
-
+            pinyinInitialsFinalsList = Files.readAllLines(Paths.get(AnkiCsvFileProcessor.class.getResource("pinyin_list.txt").getPath()));
+            AnkiCsvFileProcessor ankiCsvFileProcessor = new AnkiCsvFileProcessor(inputFilePath);
+            ankiCsvFileProcessor.toCsvWithCharactersFile();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-    }*/
 
-    /*
-    public static void extractFromXml(String fileName) {
-
-
-        try {
-
-            File plecoXmlFile = new File(fileName);
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(plecoXmlFile);
-            doc.getDocumentElement().normalize();
-            NodeList nList = doc.getElementsByTagName("entry");
-            for (int temp = 0; temp < nList.getLength(); temp++) {
-                Node nNode = nList.item(temp);
-                if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-                    Element eElement = (Element) nNode;
-                    Entry entry = new Entry(eElement.getElementsByTagName("headword").item(0).getTextContent(),
-                            eElement.getElementsByTagName("pron").item(0).getTextContent().toLowerCase(),
-                            eElement.getElementsByTagName("defn").item(0).getTextContent());
-                    entry.toStdOut();
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
-    */
 
 
 
