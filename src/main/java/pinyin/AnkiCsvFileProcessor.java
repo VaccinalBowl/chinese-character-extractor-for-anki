@@ -12,6 +12,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -73,9 +74,13 @@ public class AnkiCsvFileProcessor {
     public static void main(String[] args){
 
         Options options = new Options();
-        Option input = new Option("f", "file", true, "input file path");
-        input.setRequired(true);
-        options.addOption(input);
+        Option inputFile = new Option("f", "file", true, "input file path");
+        inputFile.setRequired(true);
+        options.addOption(inputFile);
+
+        Option inputPinyin = new Option("p", "pinyin", true, "input file path");
+        inputPinyin.setRequired(true);
+        options.addOption(inputPinyin);
 
         CommandLineParser parser = new DefaultParser();
         HelpFormatter formatter = new HelpFormatter();
@@ -90,10 +95,9 @@ public class AnkiCsvFileProcessor {
         }
 
         String inputFilePath = cmd.getOptionValue("file");
+        String inputPinyinPath = cmd.getOptionValue("pinyin");
         try {
-          
-
-            pinyinInitialsFinalsList = Files.readAllLines(Paths.get(AnkiCsvFileProcessor.class.getResource("pinyin_list.txt").getPath()));
+            pinyinInitialsFinalsList = Files.readAllLines(Paths.get(inputPinyinPath));
             AnkiCsvFileProcessor ankiCsvFileProcessor = new AnkiCsvFileProcessor(inputFilePath);
             ankiCsvFileProcessor.toCsvWithCharactersFile();
         } catch (IOException e) {
