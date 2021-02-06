@@ -15,7 +15,7 @@ public class CsvFileEntry {
     private String pinyinWithoutTones;
     private boolean isSingleCharacter;
     private int numberOfCharters;
-    private List<CsvFileEntry> singleCharacterEntries;
+    private Set<CsvFileEntry> singleCharacterEntries;
 
 
     public static class Builder{
@@ -107,8 +107,8 @@ public class CsvFileEntry {
                 '}';
     }
 
-    public List<CsvFileEntry> decomposeCharacterEntriesIntoList(){
-        List<CsvFileEntry> csvFileEntry = new ArrayList<>();
+    public Set<CsvFileEntry> decomposeCharacterEntriesIntoList(){
+        Set<CsvFileEntry> csvFileEntry = new HashSet<>();
         if(isSingleCharacter){
             return csvFileEntry;
         }
@@ -116,10 +116,7 @@ public class CsvFileEntry {
         String untonedPinyinRemaining=pinyinWithoutTones;
 
         for(int i = 0 ; i < this.simplifiedCharacter.length() ; i++) {
-
-
             String characterPinyin = mapCharacterToPinyin(Character.toString(simplifiedCharacter.charAt(i)), untonedPinyinRemaining);
-
             String actualPinyin = tonedPinyinRemaining.substring(0,characterPinyin.length());
             tonedPinyinRemaining = tonedPinyinRemaining.substring(characterPinyin.length(),tonedPinyinRemaining.length());
             untonedPinyinRemaining = untonedPinyinRemaining.substring(characterPinyin.length(),untonedPinyinRemaining.length());
@@ -153,26 +150,6 @@ public class CsvFileEntry {
         return longestMatch;
     }
 
-    /*
-    this.characterPinyinMapping = new HashMap<String,String>();
-    String leftOver=this.pron;
-    int characters=0;
-		while(!leftOver.equals("")) {
-        String longestMatch = "";
-        for(int i = 0; i <= leftOver.length();i++) {
-            String ss = leftOver.substring(0, i);
-            if (pinyin.contains(ss)) {
-                longestMatch = ss;
-            }
-        }
-
-        this.characterPinyinMapping.put(Character.toString(this.headword.charAt(characters)), longestMatch);
-        leftOver = leftOver.substring(longestMatch.length());
-
-        characters++;
-    }
-    */
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -186,7 +163,7 @@ public class CsvFileEntry {
         return Objects.hash(getSimplifiedCharacter());
     }
 
-    public List<CsvFileEntry> getSingleCharacterEntries() {
+    public Set<CsvFileEntry> getSingleCharacterEntries() {
         return singleCharacterEntries;
     }
 

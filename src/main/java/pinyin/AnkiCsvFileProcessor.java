@@ -20,34 +20,24 @@ import java.util.*;
 
 public class AnkiCsvFileProcessor {
 
-
+    private String seperator;
     public static List<String> pinyinInitialsFinalsList;
     private final List<CsvFileEntry> fileEntries;
 
 
-
-    private void readInputFile(){
-        Path path = Paths.get("testinput.csv");
-        try {
-            Files.readAllLines(path).forEach(line -> {
-                String[] entries = line.split("\t");
-                CsvFileEntry csvFileEntry = new CsvFileEntry.Builder()
-                        .simplifiedChinese(entries[0])
-                        .definition(entries[1])
-                        .rawPinyin(entries[2])
-                        .build();
-                fileEntries.add(csvFileEntry);
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public AnkiCsvFileProcessor(String pathToFile) throws IOException {
+    public AnkiCsvFileProcessor(String pathToFile,String separator) throws IOException {
         Path filePath = Paths.get(pathToFile);
         this.fileEntries = new ArrayList<>();
+        this.seperator = separator;
         Files.readAllLines(filePath).forEach(line -> {
-            String[] entries = line.split("\t");
+            if(separator.equals("pipe")){
+                seperator="\\|";
+
+            }else{
+                seperator="\\t";
+            }
+            System.out.println(line);
+            String[] entries = line.split(seperator);
             CsvFileEntry csvFileEntry = new CsvFileEntry.Builder().simplifiedChinese(entries[0]).definition(entries[1]).rawPinyin(entries[2]).build();
             fileEntries.add(csvFileEntry);
         });
@@ -58,12 +48,13 @@ public class AnkiCsvFileProcessor {
         fileEntries.forEach(csvFileEntry -> {
             if(!setOfEntries.contains(csvFileEntry)){
                 csvFileEntry.getSingleCharacterEntries().forEach(singleCharacterEntry -> {
-                    System.out.println(singleCharacterEntry.toCsvLine());
-                    setOfEntries.add(csvFileEntry);
+                    if(!setOfEntries.contains(singleCharacterEntry)){
+                        System.out.println(singleCharacterEntry.toCsvLine());
+                    }
+                    setOfEntries.add(singleCharacterEntry);
                 });
                 System.out.println(csvFileEntry.toCsvLine());
                 setOfEntries.add(csvFileEntry);
-
             }
         });
     }
@@ -82,6 +73,10 @@ public class AnkiCsvFileProcessor {
         inputPinyin.setRequired(true);
         options.addOption(inputPinyin);
 
+        Option csvSeperator = new Option("s", "seperator", true, "input file path");
+        csvSeperator.setRequired(true);
+        options.addOption(csvSeperator);
+
         CommandLineParser parser = new DefaultParser();
         HelpFormatter formatter = new HelpFormatter();
         CommandLine cmd=null;
@@ -96,15 +91,14 @@ public class AnkiCsvFileProcessor {
 
         String inputFilePath = cmd.getOptionValue("file");
         String inputPinyinPath = cmd.getOptionValue("pinyin");
+        String seperator = cmd.getOptionValue("seperator");
         try {
             pinyinInitialsFinalsList = Files.readAllLines(Paths.get(inputPinyinPath));
-            AnkiCsvFileProcessor ankiCsvFileProcessor = new AnkiCsvFileProcessor(inputFilePath);
+            AnkiCsvFileProcessor ankiCsvFileProcessor = new AnkiCsvFileProcessor(inputFilePath,seperator);
             ankiCsvFileProcessor.toCsvWithCharactersFile();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 
 
