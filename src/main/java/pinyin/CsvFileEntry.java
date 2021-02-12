@@ -120,6 +120,7 @@ public class CsvFileEntry {
             String actualPinyin = tonedPinyinRemaining.substring(0,characterPinyin.length());
             tonedPinyinRemaining = tonedPinyinRemaining.substring(characterPinyin.length(),tonedPinyinRemaining.length());
             untonedPinyinRemaining = untonedPinyinRemaining.substring(characterPinyin.length(),untonedPinyinRemaining.length());
+
             CsvFileEntry singleCharacterFileEntry = new Builder()
                     .simplifiedChinese(Character.toString(simplifiedCharacter.charAt(i)))
                     .definition("")
@@ -132,7 +133,6 @@ public class CsvFileEntry {
 
     private String mapCharacterToPinyin(String character, String pinyinString){
         String leftOverCharacters = pinyinString;
-        boolean alreadyFoundAMatch=false;
         String longestMatch = "";
         int longestMatchCurrentIndex=0;
         for(int i = 0; i <= leftOverCharacters.length();i++) {
@@ -140,11 +140,6 @@ public class CsvFileEntry {
             if (AnkiCsvFileProcessor.pinyinInitialsFinalsList.contains(currentPinyinSubstring)) {
                 longestMatch = currentPinyinSubstring;
                 longestMatchCurrentIndex=i;
-                alreadyFoundAMatch=true;
-            }else{
-                if(alreadyFoundAMatch){
-                     break;
-                }
             }
         }
         return longestMatch;

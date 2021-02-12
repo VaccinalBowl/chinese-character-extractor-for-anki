@@ -30,13 +30,12 @@ public class AnkiCsvFileProcessor {
         this.fileEntries = new ArrayList<>();
         this.seperator = separator;
         Files.readAllLines(filePath).forEach(line -> {
+
             if(separator.equals("pipe")){
                 seperator="\\|";
-
             }else{
                 seperator="\\t";
             }
-            System.out.println(line);
             String[] entries = line.split(seperator);
             CsvFileEntry csvFileEntry = new CsvFileEntry.Builder().simplifiedChinese(entries[0]).definition(entries[1]).rawPinyin(entries[2]).build();
             fileEntries.add(csvFileEntry);
