@@ -20,7 +20,7 @@ import java.util.*;
 
 public class AnkiCsvFileProcessor {
 
-    private String seperator;
+    private String separator;
     public static List<String> pinyinInitialsFinalsList;
     private final List<CsvFileEntry> fileEntries;
 
@@ -28,15 +28,18 @@ public class AnkiCsvFileProcessor {
     public AnkiCsvFileProcessor(String pathToFile,String separator) throws IOException {
         Path filePath = Paths.get(pathToFile);
         this.fileEntries = new ArrayList<>();
-        this.seperator = separator;
+        this.separator = separator;
+        if(separator.equals("pipe")){
+            this.separator="\\|";
+        }else{
+            this.separator="\\t";
+        }
+
         Files.readAllLines(filePath).forEach(line -> {
 
-            if(separator.equals("pipe")){
-                seperator="\\|";
-            }else{
-                seperator="\\t";
-            }
-            String[] entries = line.split(seperator);
+
+            System.out.println(line);
+            String[] entries = line.split(this.separator);
             CsvFileEntry csvFileEntry = new CsvFileEntry.Builder().simplifiedChinese(entries[0]).definition(entries[1]).rawPinyin(entries[2]).build();
             fileEntries.add(csvFileEntry);
         });
