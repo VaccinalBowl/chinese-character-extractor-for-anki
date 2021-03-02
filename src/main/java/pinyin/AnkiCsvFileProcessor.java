@@ -38,7 +38,6 @@ public class AnkiCsvFileProcessor {
         Files.readAllLines(filePath).forEach(line -> {
 
 
-            System.out.println(line);
             String[] entries = line.split(this.separator);
             CsvFileEntry csvFileEntry = new CsvFileEntry.Builder().simplifiedChinese(entries[0]).definition(entries[1]).rawPinyin(entries[2]).build();
             fileEntries.add(csvFileEntry);
